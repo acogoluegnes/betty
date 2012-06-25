@@ -10,6 +10,8 @@ import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.mortbay.thread.QueuedThreadPool;
+import org.mortbay.thread.ThreadPool;
 
 import com.zenika.betty.configuration.Configuration;
 import com.zenika.betty.configuration.ConfigurationKey;
@@ -36,18 +38,27 @@ public class DefaultServerFactory implements ServerFactory {
 		configureWebAppLocation(wac,configuration);
 		wac.setContextPath(configuration.get(ConfigurationKey.CONTEXT_PATH));
 		server.setHandler(wac);
+		server.setThreadPool(createThreadPool(configuration));
 		server.setStopAtShutdown(true);
 		return server;
 	}
 	
+	private ThreadPool createThreadPool(Configuration configuration) {
+		QueuedThreadPool pool = new QueuedThreadPool();
+		pool.setMinThreads(configuration.getInt(ConfigurationKey.THREAD_POOL_MIN));
+		pool.setMinThreads(configuration.getInt(ConfigurationKey.THREAD_POOL_MAX));
+		return pool;
+	}
+
 	protected void configureWebAppLocation(WebAppContext wac,Configuration configuration) {
 		wac.setWar(getWarLocation(configuration));
 	}
 
 	protected Connector [] createConnectors(Configuration configuration) {
 		SelectChannelConnector connector = new SelectChannelConnector();
+		connector.setAcceptors(configuration.getInt(ConfigurationKey.ACCEPTORS));
 		connector.setPort(configuration.getInt(ConfigurationKey.PORT));
-		connector.setHost("127.0.0.1");
+		connector.setHost(configuration.get(ConfigurationKey.HOST));
 		return new Connector [] {connector};
 	}
 	

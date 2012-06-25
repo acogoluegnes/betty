@@ -26,11 +26,13 @@ import com.zenika.betty.configuration.support.MapConfiguration;
 public class DefaultServerFactoryTest {
 
 	@Test public void runServer() throws Exception {
+		Map<String,String> map = new HashMap<String, String>();
+		for(ConfigurationKey key : ConfigurationKey.values()) {
+			map.put(key.getName(), key.getDefaultValue());
+		}
 		final int port = TestUtils.getAvailablePort();
-		Map<String,String> map = new HashMap<String, String>() {{
-			put(ConfigurationKey.PORT.getName(), String.valueOf(port));
-			put(ConfigurationKey.CONTEXT_PATH.getName(),"/");
-		}};
+		map.put(ConfigurationKey.PORT.getName(), String.valueOf(port));
+		
 		Configuration configuration = new MapConfiguration(map);
 		DefaultServerFactory serverFactory = new DefaultServerFactory() {
 			@Override

@@ -3,6 +3,9 @@
  */
 package com.zenika.betty.configuration.support;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -14,60 +17,103 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zenika.betty.configuration.Configuration;
 import com.zenika.betty.configuration.ConfigurationKey;
 
 /**
  * @author acogoluegnes
- *
+ * 
  */
 public class PropertyFileConfiguration extends AbstractConfiguration {
-	
-	private static final String OVERRIDE_FILE_DEFAULT_LOCATION = "/META-INF/betty/betty.properties";
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyFileConfiguration.class);
-	
+
+	private static final String OVERRIDE_FILE_DEFAULT_LOCATION = "META-INF/betty/betty.properties";
+
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(PropertyFileConfiguration.class);
+
 	private final Map<String, String> configuration = new HashMap<String, String>();
-	
+
 	public PropertyFileConfiguration() {
-		for(ConfigurationKey key : ConfigurationKey.values()) {
+		for (ConfigurationKey key : ConfigurationKey.values()) {
 			String value = key.getDefaultValue();
-			if(value == null) {
-				LOGGER.warn("Default value is null for key {}",value);
+			if (value == null) {
+				LOGGER.warn("Default value is null for key {}", value);
 			} else {
 				configuration.put(key.getName(), value);
 			}
 		}
 		try {
-			Enumeration<URL> files = PropertyFileConfiguration.class.getClassLoader().getResources(OVERRIDE_FILE_DEFAULT_LOCATION);
-			if(files.hasMoreElements()) {
+			Enumeration<URL> files = PropertyFileConfiguration.class
+					.getClassLoader().getResources(
+							OVERRIDE_FILE_DEFAULT_LOCATION);
+			if (files.hasMoreElements()) {
 				URL url = files.nextElement();
 				InputStream in = null;
 				try {
 					in = url.openStream();
 					Properties props = new Properties();
 					props.load(in);
-					for(Map.Entry<Object, Object> entry : props.entrySet()) {
-						String key = entry.getKey().toString();
-						if(LOGGER.isDebugEnabled()) {
-							LOGGER.debug("overriding key {} from {} to {}",new Object[]{
-								key,configuration.get(key),entry.getValue()
-							});
-						}
-						configuration.put(key,entry.getValue().toString());
+					copyPropertiesIntoMap(props, configuration);
+					if (files.hasMoreElements()) {
+						LOGGER.warn(
+								"More than one {} file found, used the first one, but this is perhaps not what you're expecting. "
+										+ "Please check the classpath to be sure there's only one {} file.",
+								OVERRIDE_FILE_DEFAULT_LOCATION,
+								OVERRIDE_FILE_DEFAULT_LOCATION);
 					}
 				} catch (Exception e) {
-					LOGGER.error("couldn't override configuration",e);
+					LOGGER.error("couldn't override configuration", e);
 				} finally {
-					if(in != null) {
+					if (in != null) {
 						in.close();
 					}
 				}
 			} else {
-				LOGGER.info("no {} file to override defaults",OVERRIDE_FILE_DEFAULT_LOCATION);
+				LOGGER.info("no {} file to override defaults",
+						OVERRIDE_FILE_DEFAULT_LOCATION);
 			}
 		} catch (IOException e) {
-			LOGGER.error("Cannot open default file {}",OVERRIDE_FILE_DEFAULT_LOCATION,e);
+			LOGGER.error("Cannot open default file {}",
+					OVERRIDE_FILE_DEFAULT_LOCATION, e);
+		}
+
+		String configurationFile = configuration
+				.get(ConfigurationKey.CONFIGURATION_FILE.getName());
+		if (configurationFile != null && configurationFile.trim().length() > 0) {
+			File file = new File(configurationFile);
+			if (file.exists()) {
+				InputStream in = null;
+				try {
+					in = new BufferedInputStream(new FileInputStream(file));
+					Properties props = new Properties();
+					props.load(in);
+					copyPropertiesIntoMap(props, configuration);
+				} catch (Exception e) {
+					LOGGER.error("couldn't override configuration", e);
+				} finally {
+					if (in != null) {
+						try {
+							in.close();
+						} catch (IOException e) {
+							LOGGER.error("couldn't close input stream", e);
+						}
+					}
+				}
+			} else {
+				LOGGER.info("File-system based configuration ({}) doesn't exist.",configurationFile);
+			}
+		}
+
+	}
+
+	private void copyPropertiesIntoMap(Properties props,
+			Map<String, String> conf) {
+		for (Map.Entry<Object, Object> entry : props.entrySet()) {
+			String key = entry.getKey().toString();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("overriding key {} from {} to {}", new Object[] {
+						key, conf.get(key), entry.getValue() });
+			}
+			conf.put(key, entry.getValue().toString());
 		}
 	}
 

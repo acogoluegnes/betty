@@ -10,6 +10,9 @@ import java.net.Socket;
 import com.zenika.betty.configuration.Configuration;
 import com.zenika.betty.configuration.ConfigurationKey;
 import com.zenika.betty.configuration.support.PropertyFileConfiguration;
+import com.zenika.betty.lifecycle.StopMonitorThread;
+import com.zenika.betty.server.ServerFactory;
+import com.zenika.betty.server.support.DefaultServerFactory;
 
 /**
  * 
@@ -27,7 +30,11 @@ public class Server {
 		if (args.length == 1 && "stop".equals(args[0])) {
 			sendStopSignal(configuration);
 		} else {
-			
+			// TODO use Java service extension to find the server factory impl to use
+			ServerFactory serverFactory = new DefaultServerFactory();
+			org.mortbay.jetty.Server server = serverFactory.createServer(configuration);
+			new StopMonitorThread(configuration,server).start();
+			server.start();
 		}
 		
 	}
