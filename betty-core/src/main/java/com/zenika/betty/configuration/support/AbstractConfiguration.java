@@ -1,28 +1,27 @@
 /**
  * 
  */
-package com.zenika.betty.configuration;
+package com.zenika.betty.configuration.support;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import com.zenika.betty.configuration.Configuration;
+import com.zenika.betty.configuration.ConfigurationKey;
 
 /**
  * @author acogoluegnes
  *
  */
-public final class DefaultConfiguration implements Configuration {
+public abstract class AbstractConfiguration implements Configuration {
 	
-	private static final Map<ConfigurationKey, String> DEFAULTS = new HashMap<ConfigurationKey, String>() {{
-		put(ConfigurationKey.SHUTDOWN_PORT, "8079");
-		put(ConfigurationKey.PORT,"8080");
-	}};
+	protected abstract Map<String,String> getConfiguration();
 
 	public String get(ConfigurationKey key) {
-		return DEFAULTS.get(key);
+		return getConfiguration().get(key.getName());
 	}
 	
 	public String get(String key) {
-		return DEFAULTS.get(ConfigurationKey.from(key));
+		return getConfiguration().get(key);
 	}
 	
 	public int getInt(ConfigurationKey key) {
@@ -34,5 +33,4 @@ public final class DefaultConfiguration implements Configuration {
 		String value = get(key);
 		return value == null ? null : Integer.valueOf(value);
 	}
-	
 }

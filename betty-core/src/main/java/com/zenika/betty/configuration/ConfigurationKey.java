@@ -9,14 +9,16 @@ package com.zenika.betty.configuration;
  */
 public enum ConfigurationKey {
 	
-	SHUTDOWN_PORT("server.shutdown.port","Port to listen on for shutdown signal."),
-	PORT("server.port","Port to listen on.");
+	SHUTDOWN_PORT("server.shutdown.port","Port to listen on for shutdown signal.","8079"),
+	PORT("server.port","Port to listen on.","8080"),
+	CONTEXT_PATH("app.context.path","Context path of the application.","/");
 
-	private final String name,description;
+	private final String name,description,defaultValue;
 	
-	private ConfigurationKey(String name,String description) {
+	private ConfigurationKey(String name,String description,String defaultValue) {
 		this.name = name;
 		this.description = description;
+		this.defaultValue = defaultValue;
 	}
 	
 	public String getName() {
@@ -25,6 +27,10 @@ public enum ConfigurationKey {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getDefaultValue() {
+		return defaultValue;
 	}
 	
 	@Override

@@ -16,13 +16,12 @@ import org.slf4j.LoggerFactory;
 
 import com.zenika.betty.configuration.Configuration;
 import com.zenika.betty.configuration.ConfigurationKey;
-import com.zenika.betty.configuration.DefaultConfiguration;
 
 /**
  * @author acogoluegnes
  *
  */
-public class PropertyFileConfiguration implements Configuration {
+public class PropertyFileConfiguration extends AbstractConfiguration {
 	
 	private static final String OVERRIDE_FILE_DEFAULT_LOCATION = "/META-INF/betty/betty.properties";
 	
@@ -31,9 +30,8 @@ public class PropertyFileConfiguration implements Configuration {
 	private final Map<String, String> configuration = new HashMap<String, String>();
 	
 	public PropertyFileConfiguration() {
-		Configuration defaultConfiguration = new DefaultConfiguration();
 		for(ConfigurationKey key : ConfigurationKey.values()) {
-			String value = defaultConfiguration.get(key);
+			String value = key.getDefaultValue();
 			if(value == null) {
 				LOGGER.warn("Default value is null for key {}",value);
 			} else {
@@ -54,7 +52,6 @@ public class PropertyFileConfiguration implements Configuration {
 						if(LOGGER.isDebugEnabled()) {
 							LOGGER.debug("overriding key {} from {} to {}",new Object[]{
 								key,configuration.get(key),entry.getValue()
-									
 							});
 						}
 						configuration.put(key,entry.getValue().toString());
@@ -74,22 +71,9 @@ public class PropertyFileConfiguration implements Configuration {
 		}
 	}
 
-	public String get(ConfigurationKey key) {
-		return configuration.get(key.getName());
-	}
-	
-	public String get(String key) {
-		return configuration.get(key);
-	}
-	
-	public int getInt(ConfigurationKey key) {
-		String value = get(key);
-		return value == null ? null : Integer.valueOf(value);
-	}
-	
-	public int getInt(String key) {
-		String value = get(key);
-		return value == null ? null : Integer.valueOf(value);
+	@Override
+	protected Map<String, String> getConfiguration() {
+		return configuration;
 	}
 
 }

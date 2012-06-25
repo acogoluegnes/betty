@@ -16,10 +16,9 @@ import com.zenika.betty.configuration.support.PropertyFileConfiguration;
 public class PropertyFileConfigurationTest {
 
 	@Test public void loadingDefault() {
-		Configuration defaultConfiguration = new DefaultConfiguration();
 		Configuration conf = new PropertyFileConfiguration();
 		for(ConfigurationKey key : ConfigurationKey.values()) {
-			Assert.assertEquals(defaultConfiguration.get(key), conf.get(key));
+			Assert.assertEquals(key.getDefaultValue(), conf.get(key));
 		}
 	}
 	
