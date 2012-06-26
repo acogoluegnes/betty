@@ -25,7 +25,7 @@ Configuring Betty in the POM of your web application is straightforward:
 		<dependencies>
 			<!-- Betty dependency -->
 			<dependency>
-				<groupId>com.zenika.</groupId>
+				<groupId>com.zenika</groupId>
 				<artifactId>betty-core</artifactId>
 				<version>0.1.0</version>
 			</dependency>
@@ -80,12 +80,15 @@ Configuring Betty in the POM of your web application is straightforward:
 	</project>
 	
 You can then package the JAR :
+
 	mvn clean package
 	
 And launch it:
+
 	java -jar target/simple-webapp-0.1.0.jar
 	
 To stop:
+
 	java -jar target/simple-webapp-0.1.0.jar stop
 
 ## Jetty configuration

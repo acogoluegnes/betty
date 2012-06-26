@@ -15,7 +15,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>com.zenika.</groupId>
+			<groupId>com.zenika</groupId>
 			<artifactId>betty-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
