@@ -93,7 +93,16 @@ To stop:
 
 ## Jetty configuration
 
-TBD
+There are several levels of configuration for the Jetty server:
+* defaults are in the `KeyConfiguration` enumeration.
+* a classpath resource can override these defaults. The location of this classpath is 
+`/META-INF/betty/betty.properties`. This is where the developer would adapt the defaults
+to their context.
+* a file (on the file system!) can override the two previous configurations. This file should
+be called `betty.properties` and be located in the directory where the JVM process is started.
+The `/META-INF/betty/betty.properties` classpath resource can contain a `configuration.file`
+key to specify the location of this file. In any case, the bootstrap system checks the existence
+of the file and only uses it if it exists.
 
 ## Logging
 
