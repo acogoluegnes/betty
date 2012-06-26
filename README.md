@@ -95,7 +95,7 @@ To stop:
 
 There are several levels of configuration for the Jetty server:
 * defaults are in the `KeyConfiguration` enumeration.
-* a classpath resource can override these defaults. The location of this classpath is 
+* a classpath resource can override these defaults. The location of this classpath resource is 
 `/META-INF/betty/betty.properties`. This is where the developer would adapt the defaults
 to their context.
 * a file (on the file system!) can override the two previous configurations. This file should
