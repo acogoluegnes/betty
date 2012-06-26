@@ -109,8 +109,10 @@ of the file and only uses it if it exists.
 Betty uses SLF4J and Logback for its logging system. You can stick to SLF4J in your own application and uses Logback as an implementation or choose
 another logging mechanism (Betty will be as long as SLF4J is on the classpath).
 
-If you stick to Logback, you have two simple ways to configure it:
-* use a `logback.xml` file at the root of the classpath.
-* specify the location of the configuration file in the command line, like `java -jar myapp.jar -Dlogback.configurationFile=/path/to/config.xml`. 
+If you stick to Logback, the simplest solution is use a `logback.xml` file at the root of the classpath.
 
+Another option is to specify the location of the configuration file in the command line
+
+	java -jar myapp.jar -Dlogback.configurationFile=/path/to/config.xml
+	
 You can learn more about Logback configuration [here](http://logback.qos.ch/manual/configuration.html).
