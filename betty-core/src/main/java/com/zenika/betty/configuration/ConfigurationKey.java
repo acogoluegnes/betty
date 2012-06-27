@@ -23,6 +23,7 @@ package com.zenika.betty.configuration;
 public enum ConfigurationKey {
 	
 	SHUTDOWN_PORT("server.shutdown.port","Port to listen on for shutdown signal.","8079"),
+	SHUTDOWN_MONITOR("server.shutdown.monitor","Should the process wait for a shutdown on a given port.","true"),
 	PORT("server.port","Port to listen on.","8080"),
 	CONTEXT_PATH("app.context.path","Context path of the application.","/"),
 	CONFIGURATION_FILE("configuration.file","Location of a file-system-based configuration file to override other configuration. Ignored if file doesn't exist.","./betty.properties"),

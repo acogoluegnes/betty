@@ -46,4 +46,24 @@ public abstract class AbstractConfiguration implements Configuration {
 		String value = get(key);
 		return value == null ? null : Integer.valueOf(value);
 	}
+	
+	@Override
+	public boolean getBoolean(ConfigurationKey key) {
+		String value = get(key);
+		return evaluateBoolean(value);
+	}
+	
+	@Override
+	public boolean getBoolean(String key) {
+		String value = get(key);
+		return evaluateBoolean(value);
+	}
+	
+	private boolean evaluateBoolean(String value) {
+		if("true".equals(value) || "yes".equals(value) || "1".equals(value)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

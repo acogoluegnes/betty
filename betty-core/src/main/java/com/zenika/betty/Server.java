@@ -19,6 +19,9 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zenika.betty.configuration.Configuration;
 import com.zenika.betty.configuration.ConfigurationKey;
 import com.zenika.betty.configuration.support.PropertyFileConfiguration;
@@ -32,6 +35,8 @@ import com.zenika.betty.server.support.DefaultServerFactory;
  *
  */
 public class Server {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
 	public static void main(String ... args) throws Exception {
 		// TODO use Java service extension to find the configuration impl to use
@@ -45,18 +50,27 @@ public class Server {
 			// TODO use Java service extension to find the server factory impl to use
 			ServerFactory serverFactory = new DefaultServerFactory();
 			org.mortbay.jetty.Server server = serverFactory.createServer(configuration);
-			new StopMonitorThread(configuration,server).start();
+			if(configuration.getBoolean(ConfigurationKey.SHUTDOWN_MONITOR)) {
+				new StopMonitorThread(configuration,server).start();
+				LOGGER.info("shutdown monitor started");
+			} else {
+				LOGGER.info("shutdown monitor is disabled");
+			}
 			server.start();
 		}
 		
 	}
 	
 	private static void sendStopSignal(Configuration configuration) throws Exception {
-		Socket s = new Socket(InetAddress.getByName("127.0.0.1"), configuration.getInt(ConfigurationKey.SHUTDOWN_PORT));
-		OutputStream out = s.getOutputStream();
-		out.write(("\r\n").getBytes());
-		out.flush();
-		s.close();
+		if(configuration.getBoolean(ConfigurationKey.SHUTDOWN_MONITOR)) {
+			Socket s = new Socket(InetAddress.getByName("127.0.0.1"), configuration.getInt(ConfigurationKey.SHUTDOWN_PORT));
+			OutputStream out = s.getOutputStream();
+			out.write(("\r\n").getBytes());
+			out.flush();
+			s.close();
+		} else {
+			LOGGER.warn("Shutdown monitor is disabled, shutdown signal not sent");
+		}
 	}
 	
 }

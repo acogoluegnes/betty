@@ -26,8 +26,12 @@ public interface Configuration {
 
 	int getInt(ConfigurationKey key);
 	
+	boolean getBoolean(ConfigurationKey key);
+	
 	String get(String key);
 	
 	int getInt(String key);
+	
+	boolean getBoolean(String key);
 	
 }

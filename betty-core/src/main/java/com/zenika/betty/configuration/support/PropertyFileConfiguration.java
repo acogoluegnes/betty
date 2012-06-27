@@ -115,7 +115,24 @@ public class PropertyFileConfiguration extends AbstractConfiguration {
 				LOGGER.info("File-system based configuration ({}) doesn't exist.",configurationFile);
 			}
 		}
-
+		for(Map.Entry<String, String> entry : configuration.entrySet()) {
+			String value = entry.getValue();
+			String [] placeholders = PropertyUtils.getPlaceholders(value);
+			if(placeholders.length > 0) {
+				for(String placeholder : placeholders) {
+					String placeholderValue = System.getProperty(placeholder);
+					if(placeholderValue == null) {
+						placeholderValue = System.getenv(placeholder);
+						if(placeholderValue != null) {
+							value = PropertyUtils.replace(value, placeholder, placeholderValue);
+						}
+					} else {
+						value = PropertyUtils.replace(value, placeholder, placeholderValue);
+					}
+				}
+				entry.setValue(value);
+			}
+		}
 	}
 
 	private void copyPropertiesIntoMap(Properties props,
